@@ -7,6 +7,7 @@ load_dotenv()
 
 def get_connection():
     db_url = os.getenv("DATABASE_URL")
+    print("DATABASE_URL detected:", bool(db_url))
 
     if db_url:
         parsed = urlparse(db_url)
