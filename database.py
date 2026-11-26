@@ -10,7 +10,7 @@ def get_connection():
         user=os.getenv("DB_USER", "root"),
         password=os.getenv("DB_PASSWORD"),
         database=os.getenv("DB_NAME", "student_performance"),
-        port=int(os.getenv("DB_PORT", "3306"))
+        port=int(os.getenv("DB_PORT") or "3306")
     )
 
     return connection
