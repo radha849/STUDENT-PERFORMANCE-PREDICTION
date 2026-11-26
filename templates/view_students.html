@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <title>View Students</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+
+        body {
+
+            margin: 0;
+
+            padding: 20px;
+
+            box-sizing: border-box;
+
+        }
+
+        .login-container {
+
+            width: 100%;
+
+            max-width: 100%;
+
+            margin: 20px auto;
+
+            padding: 20px;
+
+            box-sizing: border-box;
+
+        }
+
+        h1 {
+
+            text-align: center;
+
+            margin-bottom: 20px;
+
+        }
+
+        .table-wrapper {
+
+            width: 100%;
+
+            overflow-x: auto;
+
+        }
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            margin-top: 15px;
+
+        }
+
+        th {
+
+            background-color: navy;
+
+            color: white;
+
+            padding: 12px 8px;
+
+            border: 1px solid black;
+
+            text-align: center;
+
+            white-space: nowrap;
+
+        }
+
+        td {
+
+            padding: 10px 8px;
+
+            border: 1px solid black;
+
+            text-align: center;
+
+        }
+
+        button {
+
+            cursor: pointer;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="login-container">
+
+    <h1>Registered Students</h1>
+
+    <h3>{{ message }}</h3>
+
+    <div class="table-wrapper">
+    <h2>View Students</h2>
+    <a href="/export_students">
+
+    <button type="button" style="width: auto; background: green; margin: 10px 0;">
+
+        Download Excel
+
+    </button>
+
+</a>
+    <input
+
+    type="text"
+
+    id="studentSearch"
+
+    placeholder="Search by Student ID or Name..."
+
+    onkeyup="searchStudents()"
+
+    style="width: 100%; padding: 12px; margin: 15px 0; box-sizing: border-box;"
+
+>
+
+        <table>
+
+          <thead>
+
+    <tr>
+
+        <th onclick="sortTable(0)">Student ID ↕</th>
+
+        <th onclick="sortTable(1)">Student Name ↕</th>
+
+        <th onclick="sortTable(2)">Age ↕</th>
+
+        <th onclick="sortTable(3)">Gender ↕</th>
+
+        <th onclick="sortTable(4)">Study Hours ↕</th>
+
+        <th onclick="sortTable(5)">Attendance (%) ↕</th>
+
+        <th onclick="sortTable(6)">Previous Marks ↕</th>
+
+        <th>Action</th>
+
+    </tr>
+
+</thead>
+
+            <tbody>
+
+                {% for student in students %}
+
+                <tr>
+
+                    <td>{{ student.student_id }}</td>
+
+                    <td>{{ student.name }}</td>
+
+                    <td>{{ student.age }}</td>
+
+                    <td>{{ student.gender }}</td>
+
+                    <td>{{ student.study_hours }}</td>
+
+                    <td>{{ student.attendance }}</td>
+
+                    <td>{{ student.previous_marks }}</td>
+
+                    <td>
+
+    <a href="/edit_student/{{ student.student_id }}">
+
+        <button type="button">Edit</button>
+
+    </a>
+
+    <br><br>
+
+    <form action="/delete_student/{{ student.student_id }}"
+
+          method="POST"
+
+          onsubmit="return confirm('Are you sure you want to delete this student?');">
+
+        <button type="submit">Delete</button>
+
+    </form>
+
+</td>
+
+                        
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <br>
+
+    <a href="/dashboard">Back to Dashboard</a>
+
+</div>
+<script>
+
+function searchStudents() {
+
+    const input = document.getElementById("studentSearch");
+
+    const filter = input.value.toLowerCase();
+
+    const table = document.querySelector("table");
+
+    const rows = table.getElementsByTagName("tr");
+
+    for (let i = 1; i < rows.length; i++) {
+
+        const studentID = rows[i].getElementsByTagName("td")[0];
+
+        const studentName = rows[i].getElementsByTagName("td")[1];
+
+        if (studentID && studentName) {
+
+            const idText = studentID.textContent.toLowerCase();
+
+            const nameText = studentName.textContent.toLowerCase();
+
+            rows[i].style.display =
+
+                idText.includes(filter) || nameText.includes(filter)
+
+                ? ""
+
+                : "none";
+
+        }
+
+    }
+
+}
+let sortDirections = {};
+
+function sortTable(columnIndex) {
+    const table = document.querySelector("table");
+    const tbody = table.querySelector("tbody");
+    const rows = Array.from(tbody.querySelectorAll("tr"));
+
+    sortDirections[columnIndex] = !sortDirections[columnIndex];
+
+    rows.sort((a, b) => {
+        let x = a.cells[columnIndex].textContent.trim();
+        let y = b.cells[columnIndex].textContent.trim();
+
+        let comparison;
+
+        if (columnIndex === 0 || columnIndex === 2 ||
+            columnIndex === 4 || columnIndex === 5 ||
+            columnIndex === 6) {
+            comparison = Number(x) - Number(y);
+        } else {
+            comparison = x.localeCompare(y);
+        }
+
+        return sortDirections[columnIndex] ? comparison : -comparison;
+    });
+
+    rows.forEach(row => tbody.appendChild(row));
+}
+</script>
+</body>
+
+</html>

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <title>Admin Dashboard</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+
+        body {
+
+            margin: 0;
+
+            padding: 0;
+
+            background: #f1f5f9;
+
+            font-family: Arial, sans-serif;
+
+        }
+
+        .dashboard-layout {
+
+            display: flex;
+
+            min-height: 100vh;
+
+        }
+
+        .sidebar {
+
+            width: 230px;
+
+            background: #172554;
+
+            color: white;
+
+            padding: 25px 15px;
+
+            box-sizing: border-box;
+
+        }
+
+        .sidebar h2 {
+
+            text-align: center;
+
+            margin-bottom: 35px;
+
+        }
+
+        .sidebar a {
+
+            display: block;
+
+            color: white;
+
+            text-decoration: none;
+
+            padding: 14px;
+
+            margin: 8px 0;
+
+            border-radius: 6px;
+
+        }
+
+        .sidebar a:hover {
+
+            background: #2563eb;
+
+        }
+
+        .main-content {
+
+            flex: 1;
+
+            padding: 35px;
+
+        }
+
+        .welcome {
+
+            background: white;
+
+            padding: 25px;
+
+            border-radius: 10px;
+
+            margin-bottom: 25px;
+
+        }
+
+        .stats {
+
+            display: flex;
+
+            gap: 20px;
+
+            flex-wrap: wrap;
+
+        }
+
+        .stat-card {
+
+            background: white;
+
+            padding: 25px;
+
+            border-radius: 10px;
+
+            flex: 1;
+
+            min-width: 180px;
+
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+
+        }
+
+        .stat-card h2 {
+
+            color: #2563eb;
+
+            font-size: 32px;
+
+        }
+
+        @media (max-width: 650px) {
+
+            .dashboard-layout {
+
+                flex-direction: column;
+
+            }
+
+            .sidebar {
+
+                width: 100%;
+
+            }
+
+            .main-content {
+
+                padding: 20px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="dashboard-layout">
+
+    <div class="sidebar">
+
+        <h2>Admin Panel</h2>
+
+        <a href="/dashboard">Dashboard</a>
+
+        <a href="/add_student">Add Student</a>
+
+        <a href="/view_students">View Students</a>
+
+        <a href="/predict">Predict Performance</a>
+
+        <a href="/prediction_history">Prediction History</a>
+
+        <a href="/logout">Logout</a>
+
+    </div>
+
+    <div class="main-content">
+
+        <div class="welcome">
+
+            <h1>Student Performance Dashboard</h1>
+
+            <p>Welcome, Admin!</p>
+
+            <p>Manage student records and monitor academic performance.</p>
+
+        </div>
+
+        <div class="stats">
+
+            <div class="stat-card">
+
+                <h3>Total Students</h3>
+
+                <h2>{{ total_students }}</h2>
+
+            </div>
+
+            <div class="stat-card">
+
+                <h3>Total Predictions</h3>
+
+                <h2>{{ total_predictions }}</h2>
+
+            </div>
+
+        </div>
+
+    </div>
+        <div class="welcome">
+
+         <h2>Performance Overview</h2>
+         
+         
+         <canvas id="performanceChart" width="400" height="200"></canvas>
+         
+        
+
+          <p>Excellent: {{ excellent }}</p>
+
+          <p>Average: {{ average }}</p>
+
+          <p>Needs Improvement: {{ needs_improvement }}</p>
+
+          <h2>Performance Distribution </h2>
+           <canvas id="performancePieChart" width="200" height="100"></canvas>
+
+    </div>
+</div>
+ <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function () {
+    Chart.register(ChartDataLabels);
+
+    const excellent = Number("{{ excellent }}");
+
+    const average = Number("{{ average }}");
+
+    const needsImprovement = Number("{{ needs_improvement }}");
+
+    // Bar Chart
+
+    const ctx = document.getElementById('performanceChart');
+
+    new Chart(ctx, {
+
+        type: 'bar',
+
+        data: {
+
+            labels: ['Excellent', 'Average', 'Needs Improvement'],
+
+            datasets: [{
+
+                label: 'Number of Students',
+
+                data: [excellent, average, needsImprovement],
+
+                backgroundColor: ['#16a34a', '#f59e0b', '#dc2626']
+
+            }]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            scales: {
+
+                y: {
+
+                    beginAtZero: true,
+
+                    ticks: { precision: 0 }
+
+                }
+
+            }
+
+        }
+
+    });
+
+    // Pie Chart
+
+    const pieCtx = document.getElementById('performancePieChart');
+
+    new Chart(pieCtx, {
+
+        type: 'pie',
+
+        data: {
+
+            labels: ['Excellent', 'Average', 'Needs Improvement'],
+
+            datasets: [{
+
+                data: [excellent, average, needsImprovement],
+
+                backgroundColor: ['#16a34a', '#f59e0b', '#dc2626']
+
+            }]
+
+        },
+
+        options: {
+    responsive: true,
+    plugins: {
+        datalabels: {
+            color: 'white',
+            font: {
+                weight: 'bold',
+                size: 14
+            },
+            formatter: function(value, context) {
+                const data = context.dataset.data;
+                const total = data.reduce((sum, number) => sum + number, 0);
+
+                if (total === 0) {
+                    return '0%';
+                }
+
+                return (value / total * 100).toFixed(1) + '%';
+            }
+        },
+        tooltip: {
+            callbacks: {
+                label: function(context) {
+                    const total = context.dataset.data.reduce(
+                        (sum, value) => sum + value, 0
+                    );
+                    const percentage = total === 0
+                        ? 0
+                        : (context.raw / total * 100).toFixed(1);
+
+                    return context.label + ': ' + percentage + '%';
+                }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    });
+
+});
+
+</script>
+</body>
+</html>

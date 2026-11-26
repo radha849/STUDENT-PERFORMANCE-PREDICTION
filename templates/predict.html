@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <title>Predict Student Performance</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<div class="login-container">
+
+    <h1>Predict Student Performance</h1>
+
+    <p>Select a registered student.</p>
+
+    <form method="POST">
+
+        <select name="student_id" required>
+
+            <option value="">Select Student ID - Name</option>
+
+            {% for student in students %}
+
+            <option value="{{ student.student_id }}">
+
+                {{ student.student_id }} - {{ student.name }}
+
+            </option>
+
+            {% endfor %}
+
+        </select>
+
+        <button type="submit">Predict Performance</button>
+
+    </form>
+
+    <h3>{{ message }}</h3>
+
+    <a href="/dashboard">Back to Dashboard</a>
+
+</div>
+
+</body>
+
+</html>

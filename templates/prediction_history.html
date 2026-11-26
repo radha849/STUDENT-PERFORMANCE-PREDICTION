@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <title>Prediction History</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<div class="login-container">
+
+    <h1>Prediction History</h1>
+    <div style="text-align: right; margin: 10px 0;">
+    <a href="/export_predictions">
+
+    <button type="button" style="width: auto; background: white;">
+
+        Download Prediction History Excel
+
+    </button>
+
+
+</a>
+    </div>
+    <table border="1" cellpadding="10">
+
+        <tr>
+
+            <th>Prediction ID</th>
+
+            <th>Student ID</th>
+
+            <th>Student Name</th>
+
+            <th>Predicted Score</th>
+
+            <th>Performance Level</th>
+
+            <th>Prediction Date</th>
+
+        </tr>
+
+        {% for prediction in predictions %}
+
+        <tr>
+
+            <td>{{ prediction.prediction_id }}</td>
+
+            <td>{{ prediction.student_id }}</td>
+
+            <td>{{ prediction.name }}</td>
+
+            <td>{{ prediction.predicted_score }}</td>
+
+            <td>{{ prediction.performance_level }}</td>
+
+            <td>{{ prediction.prediction_date }}</td>
+
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+    <br>
+
+    <a href="/dashboard">Back to Dashboard</a>
+
+</div>
+
+</body>
+
+</html>
