@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from urllib.parse import urlparse, unquote
 
 load_dotenv()
+
 def get_connection():
     db_url = os.getenv("DATABASE_URL")
 
@@ -19,7 +20,6 @@ def get_connection():
         )
     else:
         connection = mysql.connector.connect(
-            db_url = os.getenv("DATABASE_URL")
             host=os.getenv("DB_HOST", "localhost"),
             user=os.getenv("DB_USER", "root"),
             password=os.getenv("DB_PASSWORD"),
@@ -28,6 +28,7 @@ def get_connection():
         )
 
     return connection
+
 
 if __name__ == "__main__":
     connection = get_connection()
