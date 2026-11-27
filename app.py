@@ -3,11 +3,13 @@ from openpyxl import Workbook
 from io import BytesIO
 import os
 from dotenv import load_dotenv
-from database import get_connection
+from database import get_connection, init_db
 
 load_dotenv()
 
 app = Flask(__name__)
+with app.app_context():
+    init_db()
 app.secret_key = os.getenv("SECRET_KEY")
 @app.route('/dashboard')
 def dashboard():
